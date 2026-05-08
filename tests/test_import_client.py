@@ -114,7 +114,7 @@ class TestImportClientCreate:
         """Test successful import creation."""
         responses.add(
             responses.POST,
-            "https://api.test.com/import?dataset_id=dataset-123",
+            "https://api.test.com/import/manifest?dataset_id=dataset-123",
             json={"id": "import-id-456"},
             status=200,
         )
@@ -130,7 +130,10 @@ class TestImportClientCreate:
     def test_create_includes_correct_headers(self, mock_session_manager):
         """Test that create includes correct authorization headers."""
         responses.add(
-            responses.POST, "https://api.test.com/import?dataset_id=dataset-123", json={"id": "import-id"}, status=200
+            responses.POST,
+            "https://api.test.com/import/manifest?dataset_id=dataset-123",
+            json={"id": "import-id"},
+            status=200,
         )
 
         client = ImportClient("https://api.test.com", mock_session_manager)
@@ -146,7 +149,7 @@ class TestImportClientCreate:
     def test_create_includes_correct_body(self, mock_session_manager):
         """Test that create sends correct request body."""
         responses.add(
-            responses.POST, "https://api.test.com/import?dataset_id=ds-1", json={"id": "import-id"}, status=200
+            responses.POST, "https://api.test.com/import/manifest?dataset_id=ds-1", json={"id": "import-id"}, status=200
         )
 
         client = ImportClient("https://api.test.com", mock_session_manager)
@@ -167,7 +170,10 @@ class TestImportClientCreate:
     def test_create_raises_on_http_error(self, mock_session_manager):
         """Test that HTTP errors are raised."""
         responses.add(
-            responses.POST, "https://api.test.com/import?dataset_id=ds-1", json={"error": "Bad request"}, status=400
+            responses.POST,
+            "https://api.test.com/import/manifest?dataset_id=ds-1",
+            json={"error": "Bad request"},
+            status=400,
         )
 
         client = ImportClient("https://api.test.com", mock_session_manager)
@@ -233,7 +239,10 @@ class TestImportClientCreateBatched:
     def test_create_batched_single_batch(self, mock_session_manager):
         """Test create_batched with files that fit in single batch."""
         responses.add(
-            responses.POST, "https://api.test.com/import?dataset_id=ds-1", json={"id": "import-123"}, status=200
+            responses.POST,
+            "https://api.test.com/import/manifest?dataset_id=ds-1",
+            json={"id": "import-123"},
+            status=200,
         )
 
         client = ImportClient("https://api.test.com", mock_session_manager)
@@ -249,7 +258,10 @@ class TestImportClientCreateBatched:
     def test_create_batched_multiple_batches(self, mock_session_manager):
         """Test create_batched with files requiring multiple batches."""
         responses.add(
-            responses.POST, "https://api.test.com/import?dataset_id=ds-1", json={"id": "import-123"}, status=200
+            responses.POST,
+            "https://api.test.com/import/manifest?dataset_id=ds-1",
+            json={"id": "import-123"},
+            status=200,
         )
         # Add responses for append calls
         responses.add(
@@ -292,7 +304,7 @@ class TestImportClientCreateBatched:
 
         responses.add_callback(
             responses.POST,
-            "https://api.test.com/import?dataset_id=ds-1",
+            "https://api.test.com/import/manifest?dataset_id=ds-1",
             callback=capture_create,
             content_type="application/json",
         )
@@ -375,11 +387,17 @@ class TestImportClientRetryBehavior:
         """Test that create retries after 401 and session refresh."""
         # First call returns 401
         responses.add(
-            responses.POST, "https://api.test.com/import?dataset_id=ds-1", json={"error": "Unauthorized"}, status=401
+            responses.POST,
+            "https://api.test.com/import/manifest?dataset_id=ds-1",
+            json={"error": "Unauthorized"},
+            status=401,
         )
         # Second call succeeds
         responses.add(
-            responses.POST, "https://api.test.com/import?dataset_id=ds-1", json={"id": "import-123"}, status=200
+            responses.POST,
+            "https://api.test.com/import/manifest?dataset_id=ds-1",
+            json={"id": "import-123"},
+            status=200,
         )
 
         client = ImportClient("https://api.test.com", mock_session_manager)

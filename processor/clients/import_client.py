@@ -30,7 +30,7 @@ class ImportClient(BaseClient):
 
     @BaseClient.retry_with_refresh
     def create(self, integration_id, dataset_id, package_id, timeseries_files):
-        url = f"{self.api_host}/import?dataset_id={dataset_id}"
+        url = f"{self.api_host}/import/manifest?dataset_id={dataset_id}"
 
         headers = {"Content-type": "application/json", "Authorization": f"Bearer {self.session_manager.session_token}"}
 
