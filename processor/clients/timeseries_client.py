@@ -26,7 +26,9 @@ class TimeSeriesClient(BaseClient):
         body["channelType"] = body.pop("type")
 
         try:
+            log.info(f"url={url} creating time series channel with body: {json.dumps(body)}")
             response = requests.post(url, headers=headers, json=body)
+            log.info(f"response={response.status_code} {response.text}")
             response.raise_for_status()
             data = response.json()
             created_channel = TimeSeriesChannel.from_dict(data["content"], data["properties"])

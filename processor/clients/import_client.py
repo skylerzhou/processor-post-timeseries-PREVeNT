@@ -30,10 +30,7 @@ class ImportClient(BaseClient):
 
     @BaseClient.retry_with_refresh
     def create(self, integration_id, dataset_id, package_id, timeseries_files):
-        ##### v0.0.2 - 0.0.3: updated import route to /import instead of /import/manifest 
-        # url = f"{self.api_host}/import/manifest?dataset_id={dataset_id}"
-        url = f"{self.api_host}/import?dataset_id={dataset_id}"
-        ##### v0.0.2 - 0.0.3
+        url = f"{self.api_host}/import/manifest?dataset_id={dataset_id}"
 
         headers = {"Content-type": "application/json", "Authorization": f"Bearer {self.session_manager.session_token}"}
 
@@ -43,6 +40,9 @@ class ImportClient(BaseClient):
             "import_type": "timeseries",
             "files": [{"upload_key": str(file.upload_key), "file_path": file.file_path} for file in timeseries_files],
         }
+
+        log.info(f"url={url} creating import manifest with {len(timeseries_files)} files")
+        log.info(f"body={json.dumps(body)}")
 
         try:
             response = requests.post(url, headers=headers, json=body)
